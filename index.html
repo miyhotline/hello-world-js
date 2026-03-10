@@ -1,17 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>JS Hello World</title>
+    <title>Story Database</title>
+    <style>
+        body { font-family: sans-serif; max-width: 400px; margin: 40px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        input, textarea { width: 100%; margin: 10px 0; padding: 8px; box-sizing: border-box; }
+        button { width: 100%; background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; }
+    </style>
 </head>
 <body>
-    <h1 id="display">Waiting for JavaScript...</h1>
+    <h2>Log a Story</h2>
+    <form id="googleForm">
+        <textarea id="story" placeholder="Write your story..." rows="5" required></textarea>
+        <button type="submit" id="submitBtn">Send to Sheet</button>
+    </form>
 
     <script>
-        // This is your JavaScript running in the browser
-        const message = "Hello World from GitHub Pages!";
-        document.getElementById("display").innerText = message;
-        console.log("JS is running successfully!");
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOvLpWVqLvIA4nN67TTAtOOip733aiZROU_1MJuiO-gba9nRb70KP1lonW3vUEaUojkw/exec";
+
+        document.getElementById('googleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            const data = {
+                story: document.getElementById('story').value
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                });
+                alert("Data saved to Google Sheets!");
+                e.target.reset();
+            } catch (error) {
+                console.error(error);
+                alert("Error saving data.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Send to Sheet";
+            }
+        });
     </script>
 </body>
 </html>
